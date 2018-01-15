@@ -18,6 +18,7 @@ import os
 import pdb
 import sys
 import logging
+import platform
 import time
 from optparse import OptionParser
 
@@ -32,6 +33,19 @@ handler.setFormatter(formatter)
 usage = """python %prog [params]
     --help               Display help menu"""
 
+class col:
+    HEADER = '\033[95m'
+    if (platform.system() != "Linux"):
+        BLUE = '\033[36m'
+    else:
+        BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    INFO = '\033[93m'
+    ERROR = '\033[91m'
+    END = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 def params_check(parser=None):
     if not parser:
         parser = OptionParser(description='Base python script')
@@ -40,8 +54,6 @@ def params_check(parser=None):
                       default="", help='First argument')
     parser.add_option("-q", "--quiet", action="store_false", dest="verbose", default=True,
                       help="Do not log on console.")
-#    parser.add_option("-h", "--help", action="store_false", dest="help", default=True,
-#                      help="Display help menu")
     (options, args) = parser.parse_args()
     if len(args) != 0:
         print (usage)
@@ -53,7 +65,6 @@ def read_options(options):
 
     if options:
         globalArg1 = options.arg1
-#        globalHelp = options.help
         globalVerbose = options.verbose
 
 def get_file_handler(fileName):
@@ -71,7 +82,7 @@ def get_file_handler(fileName):
 def main():
     # Start your code here
     logger.info("Starting main function")
-    print("hello world!")
+    print col.INFO + "hello world!" + col.END
 
 (options, args) = params_check()
 read_options(options)
