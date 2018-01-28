@@ -17,7 +17,7 @@
 
 # Calculates Min, Max and Avg values from a single column file(s)
 
-files=(create_container.txt create_files.txt create_tarball.txt exec_code.txt put_tarball.txt start_container.txt)
+files=create_container.txt,create_files.txt,create_tarball.txt,exec_code.txt,put_tarball.txt,start_container.txt
 
 # Color codes
 ERROR='\033[1;31m'
@@ -82,20 +82,20 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Calculate
+echo -e "${INFO}\t\tFile(s)\t\tMin\tMax\tAvg${NORM}"
 for file in ${files[*]}; do
-  echo -e "${INFO}File: ${file}${NORM}"
   N=$(cat ${file} | wc -l)
   max=$(grep -E '[0-9]+' ${file} | sort  -rn | head -n 1)
+  max=`printf "%.3f" ${max}`
   min=$(grep -E '[0-9]+' ${file} | sort  -rn | tail -n 1)
-  echo -e "  Min:\t${min}"
-  echo -e "  Max:\t${max}"
+  min=`printf "%.3f" ${min}`
   avg=0
   while read -r line
   do
     avg=`echo ${avg} + ${line} | bc`
   done < ${file}
   avg=`echo "scale=3; ${avg}/${N}" | bc`
-  echo -e "  Avg:\t${avg}"
+  printf "%25s\t%s\t%s\t%s\n" ${file} ${min} ${max} ${avg}
 done
 
 exit 0
