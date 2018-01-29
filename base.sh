@@ -38,7 +38,7 @@ DELIM__
 }
 
 # read the options
-TEMP=$(getopt -o h --long help -n 'installer.sh' -- "$@")
+TEMP=$(getopt -o h --long help -n 'base.sh' -- "$@")
 if [[ $? -ne 0 ]]; then
   usage
   exit 1
