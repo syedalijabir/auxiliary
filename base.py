@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# vim: set syntax=python:
 #
 # Copyright (c) 2018, Xgrid Inc, http://xgrid.co
 #
