@@ -27,6 +27,34 @@ function log() {
   echo -e "[$(basename $0)] $@"
 }
 
+function tryexec() {
+  "$@"
+  retval=$?
+  [[ $retval -eq 0 ]] && return 0
+
+  log 'A command has failed:'
+  log "  $@"
+  log "Value returned: ${retval}"
+  print_stack
+  exit $retval
+}
+
+function print_stack() {
+  local i
+  local stack_size=${#FUNCNAME[@]}
+  log "Stack trace (most recent call first):"
+  # to avoid noise we start with 1, to skip the current function
+  for (( i=1; i<$stack_size ; i++ )); do
+    local func="${FUNCNAME[$i]}"
+    [[ -z "$func" ]] && func='MAIN'
+    local line="${BASH_LINENO[(( i - 1 ))]}"
+    local src="${BASH_SOURCE[$i]}"
+    [[ -z "$src" ]] && src='UNKNOWN'
+
+    log "  $i: File '$src', line $line, function '$func'"
+  done
+}
+
 # Usage function for the script
 function usage () {
   cat << DELIM__
