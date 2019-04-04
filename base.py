@@ -24,9 +24,14 @@ import platform
 import time
 from optparse import OptionParser
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+base_path = os.path.split(os.path.split(dir_path)[0])[0]
+
+log_file = base_path + "/python.log"
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler("python.log")
+handler = logging.FileHandler(log_file)
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
