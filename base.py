@@ -27,7 +27,7 @@ from optparse import OptionParser
 dir_path = os.path.dirname(os.path.realpath(__file__))
 base_path = os.path.split(os.path.split(dir_path)[0])[0]
 
-log_file = base_path + "/python.log"
+log_file = dir_path + "/python.log"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -89,7 +89,7 @@ def get_file_handler(fileName):
 def main():
     # Start your code here
     logger.info("Starting main function")
-    print col.INFO + "hello world!" + col.END
+    print(col.INFO + "hello world!" + col.END)
 
 (options, args) = params_check()
 read_options(options)
