@@ -31,7 +31,7 @@ log_file = dir_path + "/python.log"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler(log_file)
+handler = logging.FileHandler(log_file, mode='a')
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
