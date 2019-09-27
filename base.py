@@ -37,9 +37,6 @@ logger.addHandler(handler)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 
-usage = """python %prog [params]
-    --help               Display help menu"""
-
 class col:
     HEADER = '\033[95m'
     if (platform.system() != "Linux"):
@@ -53,26 +50,52 @@ class col:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-def params_check(parser=None):
-    if not parser:
-        parser = OptionParser(description='Base python script')
+class BadNoneValue(Exception):
+    """Raise an error if an argument is None"""
+    def __init__(self, argument):
+        self.argument = argument
 
-    parser.add_option("--arg1", dest='arg1', type="string",
-                      default="", help='First argument')
-    parser.add_option("-q", "--quiet", action="store_false", dest="verbose", default=True,
-                      help="Do not log on console.")
-    (options, args) = parser.parse_args()
-    if len(args) != 0:
-        print (usage)
-        sys.exit(2)
-    return (options, args)
+    def __str__(self):
+        return 'argument {}: can not be None'.format(self.argument)
 
-def read_options(options):
-    global globalArg1, globalHelp, globalVerbose
+def argument_parser():
+    parser = argparse.ArgumentParser(
+        description='Base python script')
+    parser.add_argument(
+        '-a1', '--arg1',
+        default = "",
+        help='First argument')
+    parser.add_argument(
+        '-q', '--quiet',
+        action="store_true",
+        help='Do not log on console')
+    return parser
 
-    if options:
-        globalArg1 = options.arg1
-        globalVerbose = options.verbose
+def validate_parameters(namespace, parser):
+    if namespace.profile is None:
+        parser.print_usage()
+        raise BadNoneValue('-a1/--arg1')
+    return
+
+def parse_parameters(arguments):
+    parser = argument_parser()
+    namespace = parser.parse_args(arguments)
+    validate_parameters(namespace, parser)
+        
+def isAccessible(path, mode="r"):
+    """
+    Check if the file/directory at 'path' is accessible
+    """
+    try:
+        file = open(path, mode)
+        file.close()
+    except OSError as e:
+        logger.error(e)
+        return False
+    except IOError as e:
+        logger.error(e)
+        return False
+    return True
 
 def get_file_handler(fileName):
     if isAccessible(fileName):
@@ -81,24 +104,30 @@ def get_file_handler(fileName):
             return fileHandler
         except IOError as err:
             logger.error('I/O error({0}): {1}'.format(err.errno, err.strerror))
-            sys.exit(1)
+            return None
         except:
             logger.error("Unexpected error:", sys.exc_info()[0])
-            sys.exit(1)
+            return None
 
-def main():
+def main(cli_arguments):
+
+    # Parse parameters
+    parameters = parse_parameters(cli_arguments)
+
+    if parameters["quiet"] is False:
+        consoleHandler = logging.StreamHandler()
+        consoleHandler.setFormatter(formatter)
+        logger.addHandler(consoleHandler)
+    
     # Start your code here
     logger.info("Starting main function")
     print(col.INFO + "hello world!" + col.END)
 
-(options, args) = params_check()
-read_options(options)
-
-if globalVerbose == True:
-    consoleHandler = logging.StreamHandler()
-    consoleHandler.setFormatter(formatter)
-    logger.addHandler(consoleHandler)
-
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        sys.exit(main(sys.argv[1:]))
+    except KeyboardInterrupt:
+        logger.error('Interrupted by keyboard')
+    except BadNoneValue as e:
+        logger.error("{}: error: {}".format(sys.argv[0], e))
 
