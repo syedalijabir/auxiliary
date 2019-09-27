@@ -82,7 +82,8 @@ def parse_parameters(arguments):
     parser = argument_parser()
     namespace = parser.parse_args(arguments)
     validate_parameters(namespace, parser)
-        
+    return vars(namespace)
+
 def isAccessible(path, mode="r"):
     """
     Check if the file/directory at 'path' is accessible
