@@ -73,7 +73,7 @@ def argument_parser():
     return parser
 
 def validate_parameters(namespace, parser):
-    if namespace.profile is None:
+    if namespace.arg1 is None:
         parser.print_usage()
         raise BadNoneValue('-a1/--arg1')
     return
